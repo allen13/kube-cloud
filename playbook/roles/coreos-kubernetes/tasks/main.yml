@@ -1,0 +1,64 @@
+- name: create kubernetes config directories
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ toolbox_mount }}/etc/kubernetes/manifests"
+    - "{{ toolbox_mount }}/srv/kubernetes/manifests"
+
+- name: install kubernetes core services
+  template: src=core/{{ item }} dest={{ toolbox_mount }}/etc/kubernetes/manifests/{{ item }}
+  notify: restart kubelet
+  with_items:
+    - kube-apiserver.yaml
+    - kube-controller-manager.yaml
+    - kube-proxy.yaml
+    - kube-scheduler.yaml
+
+- name: install kubelet service
+  template:
+    src: kubelet.service
+    dest: "{{ toolbox_mount }}/etc/systemd/system/kubelet.service"
+  register: kubelet_service
+
+- name: reload service files
+  raw: systemctl daemon-reload
+  when: kubelet_service.changed
+
+- name: restart kubelet
+  raw: systemctl restart kubelet
+  when: kubelet_service.changed
+
+- name: start and enable kubelet
+  raw: systemctl enable kubelet && systemctl start kubelet
+
+- name: create kube-system namespace
+  kubectl:
+    inline_data:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: kube-system
+    state: create
+  run_once: true
+
+- name: install kubernetes add-on service templates
+  template: src=add-ons/{{ item }} dest={{ toolbox_mount }}/srv/kubernetes/manifests/{{ item }}
+  notify: restart kubelet
+  with_items:
+    - kube-dns-rc.yml
+    - kube-dns-svc.yml
+    - heapster-rc.yml
+    - heapster-svc.yml
+    - influxdb-rc.yml
+    - influxdb-svc.yml
+
+- name: start kube add-ons
+  kubectl:
+    file: "{{ toolbox_mount }}/srv/kubernetes/manifests/{{ item }}"
+    state: create
+  with_items:
+    - kube-dns-rc.yml
+    - kube-dns-svc.yml
+    - heapster-rc.yml
+    - heapster-svc.yml
+    - influxdb-rc.yml
+    - influxdb-svc.yml

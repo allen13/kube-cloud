@@ -1,0 +1,73 @@
+#cloud-config
+coreos:
+  update:
+    reboot-strategy: off
+  etcd2:
+    name: coreos-01
+    initial-cluster: coreos-01=http://192.168.8.201:2380
+    advertise-client-urls: http://$public_ipv4:2379
+    initial-advertise-peer-urls: http://$private_ipv4:2380
+    listen-client-urls: http://0.0.0.0:2379
+    listen-peer-urls: http://$private_ipv4:2380
+  fleet:
+    public-ip: $public_ipv4
+    metadata: kubernetes=master
+  flannel:
+    interface: $public_ipv4
+  units:
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: flanneld.service
+      command: start
+      drop-ins:
+        - name: 50-network-config.conf
+          content: |
+            [Service]
+            ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"10.2.0.0/16","Backend":{"Type":"vxlan"}}'
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: 40-flannel.conf
+          content: |
+            [Unit]
+            Requires=flanneld.service
+            After=flanneld.service
+    - name: pull-toolbox-container.service
+      command: start
+      content: |
+        [Unit]
+        Description=Pull toolbox container
+        After=docker.service
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/docker pull allen13/coreos-ansible-toolbox
+users:
+  - name: core
+    passwd: core
+
+write_files:
+  - path: /etc/hosts
+    owner: root
+    content: |
+      172.18.117.71  docker-registry
+  - path: /opt/bin/python
+    permissions: '0755'
+    owner: root
+    content: |
+      #!/bin/bash
+      toolbox --quiet --bind=/home:/home python "$@"
+  - path: /root/.toolboxrc
+    owner: root
+    content: |
+      TOOLBOX_DOCKER_IMAGE=allen13/coreos-ansible-toolbox
+      TOOLBOX_DOCKER_TAG=latest
+      TOOLBOX_USER=root
+  - path: /home/core/.toolboxrc
+    owner: core
+    content: |
+      TOOLBOX_DOCKER_IMAGE=allen13/coreos-ansible-toolbox
+      TOOLBOX_DOCKER_TAG=latest
+      TOOLBOX_USER=root

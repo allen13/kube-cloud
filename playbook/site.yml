@@ -1,0 +1,8 @@
+- name: kubernetes controller servers
+  hosts: kube-controller
+  gather_facts: false
+  sudo: true
+  roles:
+    - coreos-kubernetes
+  tags:
+    - coreos-kubernetes

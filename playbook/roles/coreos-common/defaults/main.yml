@@ -1,0 +1,4 @@
+ansible_python_interpreter: /opt/bin/python
+toolbox_mount: /media/root
+etcd_host: "{{ hostvars[groups['etcd'][0]]['private_ip'] }}"
+etcd_endpoints: "{{ hostvars | get_etcd_cluster(groups['etcd'], '2379', False) | join(',') }}"
