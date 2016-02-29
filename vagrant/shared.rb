@@ -11,7 +11,7 @@ system("vagrant/init-ssl ssl admin kube-admin") or abort("failed generating admi
 
 def create_coreos_vm(config, options = {})
   dirname = File.dirname(__FILE__)
-  config.vm.synced_folder "#{dirname}/..", '/vagrant', disabled: true
+  config.vm.synced_folder "#{dirname}/..", '/vagrant', type: 'rsync'
 
   name = options.fetch(:name, "node")
   id = options.fetch(:id, 1)

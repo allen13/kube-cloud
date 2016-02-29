@@ -1,0 +1,33 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=5
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker stop kube-apiserver
+ExecStartPre=-/usr/bin/docker rm kube-apiserver
+ExecStartPre=/usr/bin/docker pull gcr.io/google_containers/hyperkube:v1.1.8
+ExecStart=/usr/bin/docker run \
+  --name kube-apiserver \
+  --rm \
+  --net=host \
+  gcr.io/google_containers/hyperkube:v1.1.8 \
+  /hyperkube apiserver \
+  --bind-address=0.0.0.0 \
+  --etcd-servers=http://127.0.0.1:2379 \
+  --allow-privileged=true \
+  --service-cluster-ip-range=10.3.0.0/24 \
+  --secure-port=443 \
+  --advertise-address=${COREOS_PUBLIC_IPV4} \
+  --admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata="kube-apiserver=service"
+Global=true

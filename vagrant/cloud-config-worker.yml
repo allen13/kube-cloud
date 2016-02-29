@@ -8,7 +8,7 @@ coreos:
     listen-client-urls: http://127.0.0.1:2379
   fleet:
     public-ip: $public_ipv4
-    metadata: kubernetes=worker
+    metadata: kubelet=service,kube-proxy=service
   flannel:
     interface: $public_ipv4
   units:
@@ -26,16 +26,16 @@ coreos:
             [Unit]
             Requires=flanneld.service
             After=flanneld.service
-    - name: pull-toolbox-container.service
-      command: start
-      content: |
-        [Unit]
-        Description=Pull toolbox container
-        After=docker.service
-
-        [Service]
-        Type=oneshot
-        ExecStart=/usr/bin/docker pull allen13/coreos-ansible-toolbox
+    # - name: pull-toolbox-container.service
+    #   command: start
+    #   content: |
+    #     [Unit]
+    #     Description=Pull toolbox container
+    #     After=docker.service
+    #
+    #     [Service]
+    #     Type=oneshot
+    #     ExecStart=/usr/bin/docker pull allen13/coreos-ansible-toolbox
 users:
   - name: core
     passwd: core
