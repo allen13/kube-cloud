@@ -26,6 +26,31 @@ coreos:
             [Unit]
             Requires=flanneld.service
             After=flanneld.service
+    - name: skydns.service
+      command: start
+      content: |
+        [Unit]
+        Description=SkyDNS - etcd based dns
+        Documentation=https://github.com/skynetservices/skydns
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        Restart=always
+        RestartSec=5
+        EnvironmentFile=/etc/environment
+        ExecStartPre=-/usr/bin/docker stop skydns
+        ExecStartPre=-/usr/bin/docker rm skydns
+        ExecStartPre=/usr/bin/docker pull skynetservices/skydns:2.5.3a
+        ExecStart=/usr/bin/docker run \
+          --name skydns \
+          --rm \
+          --net=host \
+          -e ETCD_MACHINES=http://127.0.0.1:2379 \
+          skynetservices/skydns:2.5.3a
+
+        [Install]
+        WantedBy=multi-user.target
     # - name: pull-toolbox-container.service
     #   command: start
     #   content: |
@@ -45,6 +70,11 @@ write_files:
     owner: root
     content: |
       172.18.117.71  docker-registry
+  - path: /etc/resolv.conf
+    owner: root
+    content: |
+      nameserver 127.0.0.1
+      nameserver 10.0.2.3
   - path: /opt/bin/python
     permissions: '0755'
     owner: root
