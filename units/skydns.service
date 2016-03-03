@@ -1,0 +1,25 @@
+[Unit]
+Description=SkyDNS - etcd based dns
+Documentation=https://github.com/skynetservices/skydns
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+RestartSec=5
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker stop skydns
+ExecStartPre=-/usr/bin/docker rm skydns
+ExecStartPre=/usr/bin/docker pull skynetservices/skydns:2.5.3a
+ExecStart=/usr/bin/docker run \
+  --name skydns \
+  --rm \
+  --net=host \
+  -e ETCD_MACHINES=http://127.0.0.1:2379 \
+  skynetservices/skydns:2.5.3a
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Global=true

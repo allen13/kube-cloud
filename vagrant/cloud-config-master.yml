@@ -34,51 +34,6 @@ coreos:
             [Unit]
             Requires=flanneld.service
             After=flanneld.service
-    - name: skydns.service
-      command: start
-      content: |
-        [Unit]
-        Description=SkyDNS - etcd based dns
-        Documentation=https://github.com/skynetservices/skydns
-        After=docker.service
-        Requires=docker.service
-
-        [Service]
-        Restart=always
-        RestartSec=5
-        EnvironmentFile=/etc/environment
-        ExecStartPre=-/usr/bin/docker stop skydns
-        ExecStartPre=-/usr/bin/docker rm skydns
-        ExecStartPre=/usr/bin/docker pull skynetservices/skydns:2.5.3a
-        ExecStart=/usr/bin/docker run \
-          --name skydns \
-          --rm \
-          --net=host \
-          -e ETCD_MACHINES=http://127.0.0.1:2379 \
-          skynetservices/skydns:2.5.3a
-
-        [Install]
-        WantedBy=multi-user.target
-    - name: add-external-dns-to-skydns.service
-      command: start
-      content: |
-        [Unit]
-        Description=Add external dns to skydns
-        After=etcd2.service
-
-        [Service]
-        Type=oneshot
-        ExecStart=/usr/bin/etcdctl set /skydns/local/skydns/dns/ns/ns1 '{"host":"10.0.2.3"}'
-    # - name: pull-toolbox-container.service
-    #   command: start
-    #   content: |
-    #     [Unit]
-    #     Description=Pull toolbox container
-    #     After=docker.service
-    #
-    #     [Service]
-    #     Type=oneshot
-    #     ExecStart=/usr/bin/docker pull allen13/coreos-ansible-toolbox
 users:
   - name: core
     passwd: core
@@ -99,6 +54,26 @@ write_files:
     content: |
       #!/bin/bash
       toolbox --quiet --bind=/home:/home python "$@"
+  - path: /opt/bin/openshift
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      if [ ! -d ~/.kube ]; then
+         mkdir -m 0700 ~/.kube
+      fi
+      cmd=`basename $0`
+      user=`id -u`
+      group=`id -g`
+
+      docker run -i \
+        --privileged --net=host --rm \
+        --user=${user}:${group} \
+        -v /var/lib/origin:/var/lib/origin \
+        -v ~/.kube:/root/.kube \
+        -v /tmp:/tmp \
+        -e KUBECONFIG=/root/.kube/config \
+        --entrypoint ${cmd} \
+        openshift/origin "${@}"
   - path: /root/.toolboxrc
     owner: root
     content: |
