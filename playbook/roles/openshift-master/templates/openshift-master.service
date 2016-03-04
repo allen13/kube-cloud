@@ -1,0 +1,34 @@
+[Unit]
+Description=OpenShift Master
+Documentation=https://github.com/openshift/origin
+After=network.target
+After=etcd.service
+Before=openshift-node.service
+Requires=network.target
+Requires=docker.service
+PartOf=docker.service
+
+[Service]
+Environment=GOTRACEBACK=crash
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker rm -f openshift-master
+ExecStart=/usr/bin/docker run --rm --privileged --net=host \
+  --name openshift-master \
+  -v /var/lib/origin:/var/lib/origin \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /etc/origin:/etc/origin \
+  openshift/origin start master --config=/var/lib/origin/openshift.local.config/master/master-config.yaml
+ExecStartPost=/usr/bin/sleep 10
+ExecStop=/usr/bin/docker stop openshift-master
+ExecStartPost=/usr/bin/bash -c \
+  "/usr/bin/etcdctl set /skydns/local/skydns/openshift-master/%H '{\"host\":\"{{ private_ip }}\"}'"
+ExecStopPost=/usr/bin/etcdctl rm /skydns/local/skydns/openshift-master/%H
+LimitNOFILE=131072
+LimitCORE=infinity
+WorkingDirectory=/var/lib/origin
+SyslogIdentifier=openshift-master
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=openshift-node.service

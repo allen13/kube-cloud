@@ -1,8 +1,8 @@
-- name: kubernetes controller servers
-  hosts: kube-controller
+- name: openshift-master servers
+  hosts: openshift-master
   gather_facts: false
   sudo: true
   roles:
-    - coreos-kubernetes
+    - openshift-master
   tags:
-    - coreos-kubernetes
+    - openshift-master

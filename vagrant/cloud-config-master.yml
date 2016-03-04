@@ -53,7 +53,23 @@ write_files:
     owner: root
     content: |
       #!/bin/bash
-      toolbox --quiet --bind=/home:/home python "$@"
+      if [ ! -d ~/.kube ]; then
+         mkdir -m 0700 ~/.kube
+      fi
+      cmd=`basename $0`
+      user=`id -u`
+      group=`id -g`
+
+      docker run -it \
+        --privileged --net=host --rm \
+        -v /:/host \
+        -v /home:/home \
+        -v /var/lib/origin:/var/lib/origin \
+        -v ~/.kube:/root/.kube \
+        -v /tmp:/tmp \
+        -e KUBECONFIG=/root/.kube/config \
+        --entrypoint /usr/bin/python \
+        openshift/origin "$@"
   - path: /opt/bin/openshift
     permissions: '0755'
     content: |
@@ -65,7 +81,7 @@ write_files:
       user=`id -u`
       group=`id -g`
 
-      docker run -i \
+      docker run -it \
         --privileged --net=host --rm \
         --user=${user}:${group} \
         -v /var/lib/origin:/var/lib/origin \

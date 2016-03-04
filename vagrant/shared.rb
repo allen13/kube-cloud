@@ -1,14 +1,6 @@
 UPDATE_CHANNEL = 'alpha'
 IMAGE_VERSION = 'current'
 
-CLUSTER_IP="10.3.0.1"
-NODE_IP = "192.168.8.201"
-SSL_TARBALL_PATH = File.expand_path("ssl/controller.tar")
-
-system("mkdir -p ssl && vagrant/init-ssl-ca ssl") or abort ("failed generating SSL CA artifacts")
-system("vagrant/init-ssl ssl apiserver controller IP.1=#{NODE_IP},IP.2=#{CLUSTER_IP}") or abort ("failed generating SSL certificate artifacts")
-system("vagrant/init-ssl ssl admin kube-admin") or abort("failed generating admin SSL artifacts")
-
 def create_coreos_vm(config, options = {})
   dirname = File.dirname(__FILE__)
   config.vm.synced_folder "#{dirname}/..", '/vagrant', type: 'rsync'
@@ -43,8 +35,6 @@ def create_coreos_vm(config, options = {})
 
     config.vm.provision :file, :source => cloud_config, :destination => "/tmp/vagrantfile-user-data"
     config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
-    config.vm.provision :file, :source => SSL_TARBALL_PATH, :destination => "/tmp/ssl.tar"
-    config.vm.provision :shell, :inline => "mkdir -p /etc/kubernetes/ssl && tar -C /etc/kubernetes/ssl -xf /tmp/ssl.tar", :privileged => true
     config.vm.provision :shell, :inline => 'echo "core:core" | sudo chpasswd'
 
     yield(config) if block_given?

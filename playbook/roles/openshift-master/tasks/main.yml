@@ -1,0 +1,65 @@
+- name: create openshift-master config directory
+  file:
+    path: "{{ container_mount }}/var/lib/origin/openshift.local.config/master"
+    state: directory
+
+- name: install ca root certificate set
+  copy:
+    src: "{{ item.file }}"
+    dest: "{{ container_mount }}/var/lib/origin/openshift.local.config/master/{{ item.file }}"
+    mode: "{{ item.mode }}"
+    force: "{{ item.force | default(true) }}"
+  with_items:
+    - file: ca.crt
+      mode: '0644'
+    - file: ca.key
+      mode: '0600'
+    - file: ca.serial.txt
+      mode: '0644'
+      force: false
+
+- name: create the master certificates
+  command: >
+    openshift admin ca create-master-certs
+      --hostnames={{ private_ip }},openshift-master.skydns.local
+      --master=https://{{ private_ip }}:8443
+      --public-master=https://{{ private_ip }}:8443
+      --cert-dir=/var/lib/origin/openshift.local.config/master
+  args:
+    creates: /var/lib/origin/openshift.local.config/master/master.server.crt
+
+- name: create the policy file
+  command: openshift admin create-bootstrap-policy-file
+  args:
+    creates: /var/lib/origin/openshift.local.config/master/policy.json
+
+- name: symlink the admin kubeconfig to /root/.kube/config
+  file:
+    src: /var/lib/origin/openshift.local.config/master/admin.kubeconfig
+    dest: "{{ container_mount }}/root/.kube/config"
+    state: link
+
+- name: install openshift-master config
+  template:
+    src: master-config.yaml
+    dest: "{{ container_mount }}/var/lib/origin/openshift.local.config/master/master-config.yaml"
+  register: openshift_master_config
+
+- name: install openshift-master service
+  template:
+    src: openshift-master.service
+    dest: "{{ container_mount }}/etc/systemd/system/openshift-master.service"
+  register: openshift_master_service
+
+- name: reload service files
+  raw: systemctl daemon-reload
+  when: openshift_master_service.changed
+  changed_when: True
+
+- name: restart openshift-master
+  raw: systemctl restart openshift-master
+  when: openshift_master_service.changed or openshift_master_config.changed
+  changed_when: True
+
+- name: start and enable openshift-master
+  raw: systemctl enable openshift-master && systemctl start openshift-master
