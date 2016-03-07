@@ -1,0 +1,78 @@
+- name: create openshift-node config directory
+  file:
+    path: "{{ container_mount }}/var/lib/origin/openshift.local.config/node"
+    state: directory
+
+- name: install ca root certificate set
+  copy:
+    src: "roles/openshift-master/files/{{ item.file }}"
+    dest: "{{ container_mount }}/var/lib/origin/openshift.local.config/node/{{ item.file }}"
+    mode: "{{ item.mode }}"
+    force: "{{ item.force | default(true) }}"
+  with_items:
+    - file: ca.crt
+      mode: '0644'
+    - file: ca.key
+      mode: '0600'
+    - file: ca.serial.txt
+      mode: '0644'
+      force: false
+
+- name: generate the node client config
+  command: >
+    openshift admin create-api-client-config
+      --certificate-authority=/var/lib/origin/openshift.local.config/node/ca.crt
+      --client-dir=/var/lib/origin/openshift.local.config/node/
+      --groups=system:nodes
+      --master={{ openshift_master_api_url }}
+      --signer-cert=/var/lib/origin/openshift.local.config/node/ca.crt
+      --signer-key=/var/lib/origin/openshift.local.config/node/ca.key
+      --signer-serial=/var/lib/origin/openshift.local.config/node/ca.serial.txt
+      --user=system:node:{{ inventory_hostname }}
+  args:
+    creates: /var/lib/origin/openshift.local.config/node/system:node:{{ inventory_hostname }}.crt
+
+- name: generate the node server certificate
+  command: >
+    openshift admin ca create-server-cert
+      --cert=/var/lib/origin/openshift.local.config/node/server.crt
+      --key=/var/lib/origin/openshift.local.config/node/server.key
+      --hostnames="{{ private_ip }},{{ inventory_hostname }}"
+      --signer-cert=/var/lib/origin/openshift.local.config/node/ca.crt
+      --signer-key=/var/lib/origin/openshift.local.config/node/ca.key
+      --signer-serial=/var/lib/origin/openshift.local.config/node/ca.serial.txt
+  args:
+    creates: /var/lib/origin/openshift.local.config/node/server.crt
+
+- name: install openshift-node config
+  template:
+    src: node-config.yaml
+    dest: "{{ container_mount }}/var/lib/origin/openshift.local.config/node/node-config.yaml"
+  register: openshift_node_config
+
+- name: wait for openshift master
+  command: curl -k --head --silent {{ openshift_master_api_url }}
+  register: api_available_output
+  until: api_available_output.stdout.find("200 OK") != -1
+  retries: 120
+  delay: 1
+  changed_when: false
+
+- name: install openshift-node service
+  template:
+    src: openshift-node.service
+    dest: "{{ container_mount }}/etc/systemd/system/openshift-node.service"
+  register: openshift_node_service
+
+- name: reload service files
+  raw: systemctl daemon-reload
+  when: openshift_node_service.changed
+  changed_when: True
+
+- name: restart openshift-node
+  raw: systemctl restart openshift-node
+  when: openshift_node_service.changed or openshift_node_config.changed
+  changed_when: True
+
+- name: start and enable openshift-node
+  raw: systemctl enable openshift-node && systemctl start openshift-node

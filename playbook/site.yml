@@ -6,3 +6,12 @@
     - openshift-master
   tags:
     - openshift-master
+
+- name: openshift-node servers
+  hosts: openshift-node
+  gather_facts: false
+  sudo: true
+  roles:
+    - openshift-node
+  tags:
+    - openshift-node

@@ -5,7 +5,10 @@ coreos-02 ansible_ssh_host=192.168.8.202 private_ip=192.168.8.202
 [development:vars]
 ansible_ssh_user=core
 ansible_ssh_pass=core
-ansible_python_interpreter=/opt/bin/python
 
 [openshift-master]
 coreos-01
+
+[openshift-node]
+coreos-01
+coreos-02

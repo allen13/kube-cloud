@@ -1,2 +1,0 @@
-container_mount: /host
-ansible_python_interpreter: /opt/bin/python
