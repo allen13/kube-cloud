@@ -1,0 +1,3 @@
+FLANNEL_ETCD="{{ flannel_etcd_endpoints }}"
+FLANNEL_ETCD_KEY="{{ flannel_etcd_key }}"
+FLANNEL_OPTIONS="--iface {{ flannel_interface }}"

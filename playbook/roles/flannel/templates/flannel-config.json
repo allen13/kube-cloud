@@ -1,0 +1,6 @@
+{
+  "Network":"{{ flannel_subnet }}",
+  "Backend":{
+    "Type":"host-gw"
+  }
+}

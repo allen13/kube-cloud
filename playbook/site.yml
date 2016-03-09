@@ -17,6 +17,15 @@
   tags:
     - etcd
 
+- name: flannel
+  hosts: all
+  gather_facts: false
+  become: true
+  roles:
+    - flannel
+  tags:
+    - flannel
+
 # - name: openshift-master servers
 #   hosts: openshift-master
 #   gather_facts: false

@@ -1,23 +1,12 @@
-- name: install etcd container service file
-  template:
-    dest: /etc/systemd/system/etcd-docker.service
-    src: etcd-docker.service
-  register: install_etcd_result
-
 - name: install etcd config
   template:
     src: etcd.conf
     dest: /etc/etcd/etcd.conf
   notify: restart etcd
 
-- name: reload systemd units
-  command: systemctl daemon-reload
-  when: install_etcd_result.changed
-  notify: restart etcd
-
 - name: start and enable etcd-docker
   service:
-    name: etcd-docker
+    name: etcd
     state: started
     enabled: yes
   register: start_result

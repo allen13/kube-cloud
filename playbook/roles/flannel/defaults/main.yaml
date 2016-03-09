@@ -1,0 +1,5 @@
+flannel_subnet: 10.2.0.0/16
+flannel_subnet_first_two_octets: '10.2'
+flannel_etcd_key: /openshift.com/network
+flannel_etcd_endpoints: http://127.0.0.1:2379
+flannel_interface: eth1

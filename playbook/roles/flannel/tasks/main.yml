@@ -1,0 +1,47 @@
+- name: install flanneld config
+  template:
+    src: flanneld
+    dest: /etc/sysconfig/flanneld
+  notify:
+    - restart docker
+    - restart flanneld
+
+- name: create /etc/flannel dir
+  file: path=/etc/flannel state=directory
+
+- name: setup flannel etcd config
+  template:
+    src: flannel-config.json
+    dest: /etc/flannel/config.json
+  notify:
+    - restart docker
+    - restart flanneld
+  register: flannel_etcd_config
+
+- name: insert flannel config into etcd
+  command: >
+    curl -L http://127.0.0.1:2379/v2/keys{{ flannel_etcd_key }}/config
+      -XPUT --data-urlencode value@/etc/flannel/config.json
+  run_once: true
+  when: flannel_etcd_config.changed
+
+- name: start and enable flanneld
+  service:
+    name: flanneld
+    state: started
+    enabled: yes
+  register: start_result
+
+- set_fact:
+    flannel_service_status_changed: "{{ start_result | changed }}"
+
+- name: get docker bridge subnet
+  shell: ip a show docker0 | grep "inet[[:space:]]" | awk '{print $2}'
+  register: docker_bridge_subnet
+  changed_when: false
+
+- name: remove docker bridge ip
+  shell: ip a del {{ docker_bridge_subnet.stdout }} dev docker0
+  when: "'{{ flannel_subnet_first_two_octets }}' not in docker_bridge_subnet.stdout"
+  notify:
+    - restart docker
