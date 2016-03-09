@@ -1,11 +1,8 @@
-from ansible import errors, runner
+from ansible import errors
 import json
 
 
 def get_etcd_cluster(host_vars, group, port='2380', include_hostname=True):
-    if type(host_vars) != runner.HostVars:
-        raise errors.AnsibleFilterError("|failed expects a HostVars")
-
     if type(group) != list:
         raise errors.AnsibleFilterError("|failed expects a List")
 

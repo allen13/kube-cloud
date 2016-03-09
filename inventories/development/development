@@ -1,14 +1,17 @@
 [development]
-coreos-01 ansible_ssh_host=192.168.8.201 private_ip=192.168.8.201
-coreos-02 ansible_ssh_host=192.168.8.202 private_ip=192.168.8.202
+atomic-01 ansible_ssh_host=192.168.8.201 private_ip=192.168.8.201
+atomic-02 ansible_ssh_host=192.168.8.202 private_ip=192.168.8.202
 
 [development:vars]
-ansible_ssh_user=core
-ansible_ssh_pass=core
+ansible_ssh_user=vagrant
+ansible_ssh_pass=vagrant
+
+[etcd]
+atomic-01
 
 [openshift-master]
-coreos-01
+atomic-01
 
 [openshift-node]
-coreos-01
-coreos-02
+atomic-01
+atomic-02

@@ -1,17 +1,26 @@
-- name: openshift-master servers
-  hosts: openshift-master
+- name: etcd
+  hosts: all
   gather_facts: false
-  sudo: true
+  become: true
   roles:
-    - openshift-master
+    - etcd
   tags:
-    - openshift-master
+    - etcd
 
-- name: openshift-node servers
-  hosts: openshift-node
-  gather_facts: false
-  sudo: true
-  roles:
-    - openshift-node
-  tags:
-    - openshift-node
+# - name: openshift-master servers
+#   hosts: openshift-master
+#   gather_facts: false
+#   become: true
+#   roles:
+#     - openshift-master
+#   tags:
+#     - openshift-master
+#
+# - name: openshift-node servers
+#   hosts: openshift-node
+#   gather_facts: false
+#   become: true
+#   roles:
+#     - openshift-node
+#   tags:
+#     - openshift-node
