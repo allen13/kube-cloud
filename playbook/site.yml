@@ -1,3 +1,13 @@
+- name: fix root .bashrc
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: copy over /etc/skel files to /root
+      command: cp -a /etc/skel/. /root/
+      args:
+        creates: /root/.bashrc
+
 - name: etcd
   hosts: all
   gather_facts: false
