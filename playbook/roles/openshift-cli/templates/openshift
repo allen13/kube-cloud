@@ -1,0 +1,17 @@
+#!/bin/bash
+if [ ! -d ~/.kube ]; then
+   mkdir -m 0700 ~/.kube
+fi
+cmd=`basename $0`
+user=`id -u`
+group=`id -g`
+
+docker run -it \
+  --privileged --net=host --rm \
+  --user=${user}:${group} \
+  -v /var/lib/origin:/var/lib/origin \
+  -v ~/.kube:/root/.kube \
+  -v /tmp:/tmp \
+  -e KUBECONFIG=/root/.kube/config \
+  --entrypoint ${cmd} \
+  openshift/origin:{{ openshift_origin_version }} "${@}"

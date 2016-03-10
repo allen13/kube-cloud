@@ -1,0 +1,15 @@
+- name: create /usr/local/bin/openshift cli wrapper
+  template:
+    src: openshift
+    dest: /usr/local/sbin/openshift
+    mode: 0755
+
+- name: create client symlinks
+  file:
+    path: "{{ item }}"
+    state: link
+    src: /usr/local/sbin/openshift
+  with_items:
+    - /usr/local/sbin/oadm
+    - /usr/local/sbin/oc
+    - /usr/local/sbin/kubectl

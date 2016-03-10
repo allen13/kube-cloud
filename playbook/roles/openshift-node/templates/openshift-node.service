@@ -1,29 +1,31 @@
 [Unit]
+Requires=docker.service
 After=docker.service
 After=openshift-master.service
-Requires=docker.service
-PartOf=docker.service
 
 [Service]
+EnvironmentFile=-/etc/sysconfig/openshift-node
 ExecStartPre=-/usr/bin/docker rm -f openshift-node
 ExecStart=/usr/bin/docker run \
   --name openshift-node \
   --rm --privileged --net=host --pid=host \
-  -e HOST=/rootfs \
-  -e HOST_ETC=/host-etc \
   -v /:/rootfs:ro \
-  -v /var/lib/origin/openshift.local.config/node:/var/lib/origin/openshift.local.config/node \
-  -v /var/lib/origin/openshift.local.volumes:/var/lib/origin/openshift.local.volumes \
+  -v /etc/systemd/system:/host-etc/systemd/system \
   -v /etc/localtime:/etc/localtime:ro \
   -v /etc/machine-id:/etc/machine-id:ro \
+  -v /lib/modules:/lib/modules \
   -v /run:/run -v /sys:/sys:ro \
   -v /usr/bin/docker:/usr/bin/docker:ro \
-  -v /var/lib/docker:/var/lib/docker:rw \
-  -v /lib/modules:/lib/modules \
-  -v /etc/systemd/system:/host-etc/systemd/system \
-  -v /var/log:/var/log \
-  openshift/origin:{{ openshift_origin_version }} start node \
-    --config /var/lib/origin/openshift.local.config/node/node-config.yaml
+  -v /var/lib/docker:/var/lib/docker \
+  -v /etc/origin/node:/etc/origin/node \
+  -v /etc/origin/openvswitch:/etc/openvswitch \
+  -v /etc/origin/sdn:/etc/openshift-sdn \
+  -v /var/lib/origin:/var/lib/origin \
+  -e CONFIG_FILE=${CONFIG_FILE} \
+  -e OPTIONS=${OPTIONS} \
+  -e HOST=/rootfs \
+  -e HOST_ETC=/host-etc \
+  openshift/node:{{ openshift_origin_version }}
 ExecStartPost=/usr/bin/sleep 10
 ExecStop=/usr/bin/docker stop openshift-node
 Restart=always
