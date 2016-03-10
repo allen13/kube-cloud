@@ -1,0 +1,36 @@
+apiVersion: v1
+id: ceph-mon
+kind: ReplicationController
+metadata:
+  labels:
+    name: serving
+  name: ceph-mon
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        name: frontend
+    spec:
+      containers:
+      - env:
+        - name: CEPH_DAEMON
+          value: MON
+        - name: NETWORK_AUTO_DETECT
+          value: '1'
+        image: ceph/daemon
+        name: ceph-mon-pod
+        volumeMounts:
+        - mountPath: /etc/ceph/
+          name: cephconfig
+        - mountPath: /var/lib/ceph/
+          name: cephdata
+      volumes:
+      - name: cephconfig
+        source:
+          hostDir:
+            path: /etc/ceph/
+      - name: cephdata
+        source:
+          hostDir:
+            path: /var/lib/ceph/

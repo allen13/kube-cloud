@@ -31,24 +31,31 @@ require() {
   fi
 }
 #### end ansible module boilerplate functions ####
+require manifest
 
 openshift_client_binary=/usr/local/sbin/oc
 openshift_tmp_manifest_path=/tmp/openshift_tmp_manifest.yml
 
+default project default
 
-echo "${manifest:1:${#manifest}-2}" > "$openshift_tmp_manifest_path"
+# If the manifest begins with a quote, remove them
+if [[ "$manifest" = \'* ]]; then
+  manifest="${manifest:1:${#manifest}-2}"
+fi
+echo "$manifest" > "$openshift_tmp_manifest_path"
 
-"$openshift_client_binary" get -f "$openshift_tmp_manifest_path" &> /dev/null
-check_manifest_exit_code="$?"
+output=$("$openshift_client_binary" create -f "$openshift_tmp_manifest_path" -n "$project" 2>&1)
 
-if [ "$check_manifest_exit_code" -eq 0 ]; then
+if [[ "$output" = *created* ]]; then
+  changed true
+elif [[ "$output" = *exists* ]]; then
   changed false
 else
-  output=$("$openshift_client_binary" create -f "$openshift_tmp_manifest_path" 2>&1)
-  create_manifest_exit_code="$?"
-  if [ "$create_manifest_exit_code" -eq 0 ]; then
-    changed true
-  else
-    fail_module "Failed to create manifest: $output"
-  fi
+  fail_module "Failed to create manifest: $output"
 fi
+
+# case "$output" in
+#   *created* ) changed true;;
+#   *exists* ) changed false;;
+#   * ) fail_module "Failed to create manifest: $output";;
+# esac

@@ -16,4 +16,5 @@
 
 - name: pull cli image
   command: docker pull openshift/origin:{{ openshift_origin_version }}
-  changed_when: false
+  register: openshift_image_pull
+  changed_when: "'Image is up to date' not in openshift_image_pull.stdout"

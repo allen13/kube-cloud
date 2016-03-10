@@ -79,3 +79,60 @@
     - openshift-router
   tags:
     - openshift-router
+
+- name: setup ceph
+  hosts: ceph-mons[0]
+  gather_facts: false
+  become: true
+  roles:
+    - ceph-setup
+  tags:
+    - ceph-setup
+    - ceph
+
+- name: ceph monitor daemon
+  hosts: ceph-mons
+  gather_facts: false
+  become: true
+  serial: 1
+  roles:
+    - ceph-mon
+  tags:
+    - ceph-mon
+    - ceph
+
+# - name: ceph object storage daemon
+#   hosts: ceph-osds
+#   become: true
+#   roles:
+#     - ceph-osd
+#   tags:
+#     - ceph-osd
+#     - ceph
+#
+# - name: ceph metadata storage daemon
+#   hosts: ceph-mdss
+#   become: true
+#   roles:
+#     - ceph-mds
+#   tags:
+#     - ceph-mds
+#     - ceph
+#
+# - name: ceph rados gateway server
+#   hosts: ceph-rgws
+#   become: true
+#   roles:
+#     - ceph-rgw
+#   tags:
+#     - ceph-rgw
+#     - ceph
+#
+# - name: ceph restapis
+#   hosts: ceph-restapis
+#   become: true
+#   roles:
+#     - ceph-restapi
+#   tags:
+#     - ceph-restapi
+#     - ceph

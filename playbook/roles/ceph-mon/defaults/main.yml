@@ -1,0 +1,50 @@
+# ###########
+# # GENERAL #
+# ###########
+#
+# fetch_directory: fetch/
+#
+# mon_group_name: mons
+#
+# # ACTIVATE BOTH FSID AND MONITOR_SECRET VARIABLES FOR NON-VAGRANT DEPLOYMENT
+# fsid: "{{ cluster_uuid.stdout }}"
+# monitor_secret: "{{ monitor_keyring.stdout }}"
+# cephx: true
+#
+# # CephFS
+# pool_default_pg_num: 128
+# cephfs_data: cephfs_data
+# cephfs_metadata: cephfs_metadata
+# cephfs: cephfs
+#
+# # Secure your cluster
+# # This will set the following flags on all the pools:
+# # * nosizechange
+# # * nopgchange
+# # * nodelete
+#
+# secure_cluster: false
+# secure_cluster_flags:
+#   - nopgchange
+#   - nodelete
+#   - nosizechange
+#
+# ceph_config_keys:
+#   - /etc/ceph/ceph.client.admin.keyring
+#   - /etc/ceph/ceph.conf
+#   - /etc/ceph/monmap
+#   - /etc/ceph/ceph.mon.keyring
+#   - /var/lib/ceph/bootstrap-osd/ceph.keyring
+#   - /var/lib/ceph/bootstrap-rgw/ceph.keyring
+#   - /var/lib/ceph/bootstrap-mds/ceph.keyring
+#
+# ##########
+# # DOCKER #
+# ##########
+#
+# mon_containerized_deployment: false
+# # ceph_mon_docker_interface: eth0
+# # ceph_mon_docker_subnet: # subnet of the ceph_mon_docker_interface
+# ceph_mon_docker_username: ceph
+# ceph_mon_docker_imagename: daemon
+# ceph_mon_extra_envs: "MON_NAME={{ ansible_hostname }}" # comma separated variables

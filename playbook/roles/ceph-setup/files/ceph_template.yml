@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: List
+labels:
+  application: ceph-devauto
+metadata: {}
+items:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: ceph-devauto
+  secrets:
+  - name: ceph-devauto-secret
+- apiVersion: v1
+  kind: RoleBinding
+  metadata:
+    name: edit
+    namespace: ceph
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: ceph-devauto
+    namespace: ceph
+  userNames:
+  - "system:serviceaccount:default:ceph-devauto"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: ceph-devauto
+    labels:
+      deploymentConfig: ceph-devauto
+  spec:
+    serviceAccountName: ceph-cluster
+    restartPolicy: Never
+    containers:
+    - name: ceph-bootstrap
+      image: ceph/config
+      imagePullPolicy: Always
+      env:
+      - name: APPLICATION_NAME
+        value: ceph-config
+      - name: ETCDCTL_PEERS
+        value: "http://192.168.8.201:2379"
+      - name: MON_IP
+        value: 192.168.8.201
+      - name: MON_NAME
+        value: mon00
+      - name: CLUSTER
+        value: ceph-devauto

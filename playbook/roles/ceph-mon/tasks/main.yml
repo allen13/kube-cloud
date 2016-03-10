@@ -1,0 +1,15 @@
+# - name: check if a cluster is already running
+#   shell: "docker ps | grep -sq 'ceph/daemon'"
+#   register: ceph_health
+#   changed_when: false
+#   failed_when: false
+#
+# - name: check on the unhealthy cluster
+#   include: checks.yml
+#   when: ceph_health.rc != 0
+#
+# - name: fetch copy_configs
+#   include: fetch_configs.yml
+#
+# - name: copy copy_configs
+#   include: copy_configs.yml
