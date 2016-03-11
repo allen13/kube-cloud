@@ -47,6 +47,17 @@
   args:
     creates: /var/lib/origin/openshift.local.config/node/server.crt
 
+- name: ensure manifests directory is present
+  file:
+    path: '{{ openshift_pod_manifest_path }}'
+    state: directory
+    mode: 0755
+
+- name: install dummy container that sleeps then exits to prevent failure from empty manifests
+  copy:
+    src: alpine.yml
+    dest: '{{ openshift_pod_manifest_path }}/alpine.yml'
+
 - name: install openshift-node config
   template:
     src: node-config.yaml

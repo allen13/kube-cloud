@@ -5,3 +5,5 @@ openshift_binary: /usr/local/sbin/openshift
 openshift_admin_binary: /usr/local/sbin/oadm
 openshift_client_binary: /usr/local/sbin/oc
 openshift_kubectl_binary: /usr/local/sbin/kubectl
+
+openshift_pod_manifest_path: /etc/origin/node/manifests

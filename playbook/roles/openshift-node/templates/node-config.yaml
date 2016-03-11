@@ -21,6 +21,8 @@ networkConfig:
 nodeIP: {{ private_ip }}
 nodeName: {{ inventory_hostname }}
 podManifestConfig:
+  path: {{ openshift_pod_manifest_path }}
+  fileCheckIntervalSeconds: 10
 servingInfo:
   bindAddress: 0.0.0.0:10250
   bindNetwork: tcp4
