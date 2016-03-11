@@ -52,3 +52,12 @@
     - openshift-node
   tags:
     - openshift-node
+
+- name: openshift manage cluster
+  hosts: openshift-master[0]
+  gather_facts: false
+  become: true
+  roles:
+    - openshift-manage-cluster
+  tags:
+    - openshift-manage-cluster
