@@ -20,7 +20,7 @@ networkConfig:
   networkPluginName: ""
 nodeIP: {{ private_ip }}
 nodeName: {{ inventory_hostname }}
-podManifestConfig: /etc/origin/node/manifests
+podManifestConfig:
 servingInfo:
   bindAddress: 0.0.0.0:10250
   bindNetwork: tcp4
