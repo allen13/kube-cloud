@@ -20,7 +20,7 @@
 
 - name: create the master certificates
   command: >
-    /usr/local/sbin/oadm ca create-master-certs
+    {{ openshift_admin_binary }} ca create-master-certs
       --hostnames={{ private_ip }},openshift-master.skydns.local
       --master=https://{{ private_ip }}:8443
       --public-master=https://{{ private_ip }}:8443
@@ -29,7 +29,7 @@
     creates: /var/lib/origin/openshift.local.config/master/master.server.crt
 
 - name: create the policy file
-  command: /usr/local/sbin/oadm create-bootstrap-policy-file
+  command: {{ openshift_admin_binary }} create-bootstrap-policy-file
   args:
     creates: /var/lib/origin/openshift.local.config/master/policy.json
 

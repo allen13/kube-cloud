@@ -23,7 +23,7 @@
 
 - name: generate the node client config
   command: >
-    /usr/local/sbin/oadm create-api-client-config
+    {{ openshift_admin_binary }} create-api-client-config
       --certificate-authority=/var/lib/origin/openshift.local.config/node/ca.crt
       --client-dir=/var/lib/origin/openshift.local.config/node/
       --groups=system:nodes
@@ -37,7 +37,7 @@
 
 - name: generate the node server certificate
   command: >
-    /usr/local/sbin/oadm ca create-server-cert
+    {{ openshift_admin_binary }} ca create-server-cert
       --cert=/var/lib/origin/openshift.local.config/node/server.crt
       --key=/var/lib/origin/openshift.local.config/node/server.key
       --hostnames="{{ private_ip }},{{ inventory_hostname }}"
