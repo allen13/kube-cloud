@@ -124,7 +124,7 @@ projectConfig:
     mcsLabelsPerProject: 5
     uidAllocatorRange: 1000000000-1999999999/10000
 routingConfig:
-  subdomain: router.default.svc.cluster.local
+  subdomain: apps.{{ openshift_dns_domain }}
 serviceAccountConfig:
   limitSecretReferences: false
   managedNames:

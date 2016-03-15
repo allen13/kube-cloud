@@ -70,3 +70,12 @@
     - openshift-registry
   tags:
     - openshift-registry
+
+- name: openshift router
+  hosts: openshift-master[0]
+  gather_facts: false
+  become: true
+  roles:
+    - openshift-router
+  tags:
+    - openshift-router

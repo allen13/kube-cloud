@@ -1,0 +1,5 @@
+- name: deploy openshift router
+  command: >
+    {{ openshift_admin_binary }} router
+  register: openshift_router_results
+  changed_when: "'service exists' not in openshift_router_results.stdout"
