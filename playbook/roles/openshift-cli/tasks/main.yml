@@ -13,3 +13,7 @@
     - "{{ openshift_admin_binary }}"
     - "{{ openshift_client_binary }}"
     - "{{ openshift_kubectl_binary }}"
+
+- name: pull cli image
+  command: docker pull openshift/origin:{{ openshift_origin_version }}
+  changed_when: false
