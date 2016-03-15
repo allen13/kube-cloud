@@ -61,3 +61,12 @@
     - openshift-manage-cluster
   tags:
     - openshift-manage-cluster
+
+- name: openshift registry
+  hosts: openshift-master[0]
+  gather_facts: false
+  become: true
+  roles:
+    - openshift-registry
+  tags:
+    - openshift-registry

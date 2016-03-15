@@ -1,0 +1,7 @@
+- name: deploy openshift registry
+  command: >
+    {{ openshift_admin_binary }} registry
+    --create
+    --credentials={{ openshift_master_config_dir }}/openshift-registry.kubeconfig
+  register: openshift_registry_results
+  changed_when: "'service exists' not in openshift_registry_results.stdout"
