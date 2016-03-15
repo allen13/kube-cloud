@@ -1,5 +1,5 @@
 {
-  "Network":"{{ flannel_subnet }}",
+  "Network":"{{ openshift_cluster_subnet }}",
   "Backend":{
     "Type":"host-gw"
   }

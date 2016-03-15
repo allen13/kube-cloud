@@ -75,17 +75,17 @@ kubernetesMasterConfig:
     keyFile: master.proxy-client.key
   schedulerConfigFile: ""
   servicesNodePortRange: 30000-32767
-  servicesSubnet: {{ service_network_cidr }}
+  servicesSubnet: {{ openshift_service_subnet }}
   staticNodeNames: null
 masterClients:
   externalKubernetesKubeConfig: ""
   openshiftLoopbackKubeConfig: openshift-master.kubeconfig
 masterPublicURL: https://{{ private_ip }}:8443
 networkConfig:
-  clusterNetworkCIDR: {{ cluster_network_cidr }}
+  clusterNetworkCIDR: {{ openshift_cluster_subnet }}
   hostSubnetLength: 8
   networkPluginName: ""
-  serviceNetworkCIDR: {{ service_network_cidr }}
+  serviceNetworkCIDR: {{ openshift_service_subnet }}
 oauthConfig:
   alwaysShowProviderSelection: false
   assetPublicURL: https://{{ private_ip }}:8443/console/

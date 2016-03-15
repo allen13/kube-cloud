@@ -6,7 +6,7 @@ authConfig:
   authorizationCacheSize: 1000
   authorizationCacheTTL: 5m
 dnsDomain: cluster.local
-dnsIP: ""
+dnsIP: {{ openshift_kubernetes_service_ip }}
 dockerConfig:
   execHandlerName: native
 imageConfig:

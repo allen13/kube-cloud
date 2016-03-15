@@ -42,6 +42,6 @@
 
 - name: remove docker bridge ip
   shell: ip a del {{ docker_bridge_subnet.stdout }} dev docker0
-  when: "'{{ flannel_subnet_first_two_octets }}' not in docker_bridge_subnet.stdout"
+  when: "'{{ openshift_cluster_subnet_first_two_octets }}' not in docker_bridge_subnet.stdout"
   notify:
     - restart docker
