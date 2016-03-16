@@ -5,7 +5,7 @@ A [Kubernetes](http://kubernetes.io/docs/)/[Openshift](https://docs.openshift.or
 
 ####Setup
 
-Install [Virtualbox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/downloads) on your local machine
+Install [Virtualbox](https://www.virtualbox.org/wiki/Downloads), [Vagrant](http://www.vagrantup.com/downloads), and [Ansible](http://docs.ansible.com/ansible/intro_installation.html) on your local machine.
 
 ####Running in vagrant
 
