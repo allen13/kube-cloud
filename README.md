@@ -1,7 +1,7 @@
 kube-cloud
 =======================
 
-A [Kubernetes](http://kubernetes.io/docs/)/[Openshift](https://docs.openshift.org/latest/welcome/index.html) driven container cloud. This is a simplified version of [openshift-ansible](https://github.com/openshift/openshift-ansible) that only targets fedora atomic.
+A [Kubernetes](http://kubernetes.io/docs/)/[Openshift](https://docs.openshift.org/latest/welcome/index.html) driven container cloud. This is a simplified version of [openshift-ansible](https://github.com/openshift/openshift-ansible) that only targets [Fedora Atomic](http://www.projectatomic.io/download/).
 
 ####Setup
 
