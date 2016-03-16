@@ -1,5 +1,3 @@
 openshift_setup_permissions:
-  - policy add-role-to-user admin admin -n openshift
-  - policy add-role-to-user admin admin -n openshift-infra
-  - policy add-role-to-user admin admin -n default
+  - policy add-cluster-role-to-user cluster-admin admin
   - policy add-scc-to-user hostnetwork -z router
