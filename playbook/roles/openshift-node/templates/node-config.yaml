@@ -19,7 +19,7 @@ networkConfig:
   mtu: 1450
   networkPluginName: ""
 nodeIP: {{ private_ip }}
-nodeName: {{ inventory_hostname }}
+nodeName: {{ private_ip }}
 podManifestConfig:
   path: {{ openshift_pod_manifest_path }}
   fileCheckIntervalSeconds: 10
