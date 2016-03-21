@@ -1,13 +1,13 @@
 openshift_origin_version: v1.1.4
 openshift_master_api_url: https://{{ hostvars[groups['openshift-master'][0]]['private_ip'] }}:8443
 
-openshift_binary: /usr/local/sbin/openshift
-openshift_admin_binary: /usr/local/sbin/oadm
-openshift_client_binary: /usr/local/sbin/oc
-openshift_kubectl_binary: /usr/local/sbin/kubectl
+openshift_binary_path: /usr/local/sbin
+openshift_binary: "{{ openshift_binary_path }}/openshift"
+openshift_admin_binary: "{{ openshift_binary_path }}/oadm"
+openshift_client_binary: "{{ openshift_binary_path }}/oc"
+openshift_kubectl_binary: "{{ openshift_binary_path }}/kubectl"
 
 openshift_pod_manifest_path: /etc/origin/node/manifests
-openshift_master_config_dir: /var/lib/origin/openshift.local.config/master
 
 openshift_cluster_subnet: 10.2.0.0/16
 openshift_cluster_subnet_first_two_octets: '10.2'

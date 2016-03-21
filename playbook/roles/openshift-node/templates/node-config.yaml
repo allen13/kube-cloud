@@ -14,7 +14,7 @@ imageConfig:
   latest: false
 iptablesSyncPeriod: 5s
 kind: NodeConfig
-masterKubeConfig: /var/lib/origin/openshift.local.config/node/system:node:{{ inventory_hostname }}.kubeconfig
+masterKubeConfig: system:node:{{ inventory_hostname }}.kubeconfig
 networkConfig:
   mtu: 1450
   networkPluginName: ""
@@ -26,8 +26,8 @@ podManifestConfig:
 servingInfo:
   bindAddress: 0.0.0.0:10250
   bindNetwork: tcp4
-  certFile: /var/lib/origin/openshift.local.config/node/server.crt
-  clientCA: /var/lib/origin/openshift.local.config/node/ca.crt
-  keyFile: /var/lib/origin/openshift.local.config/node/server.key
+  certFile: server.crt
+  clientCA: ca.crt
+  keyFile: server.key
   namedCertificates: null
-volumeDirectory: /var/lib/origin/openshift.local.volumes
+volumeDirectory: {{ openshift_node_volume_path }}

@@ -10,6 +10,7 @@ PartOf=docker.service
 
 [Service]
 Environment=GOTRACEBACK=crash
+EnvironmentFile=/etc/sysconfig/openshift-master
 EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker rm -f openshift-master
 ExecStart=/usr/bin/docker run --rm --privileged --net=host \
@@ -17,8 +18,9 @@ ExecStart=/usr/bin/docker run --rm --privileged --net=host \
   -v /var/lib/origin:/var/lib/origin \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /etc/origin:/etc/origin \
+  --entrypoint /usr/bin/openshift \
   openshift/origin:{{ openshift_origin_version }} start master \
-    --config={{ openshift_master_config_dir }}/master-config.yaml
+    --config=${CONFIG_FILE} $OPTIONS
 ExecStartPost=/usr/bin/sleep 10
 ExecStop=/usr/bin/docker stop openshift-master
 ExecStartPost=/usr/bin/bash -c \

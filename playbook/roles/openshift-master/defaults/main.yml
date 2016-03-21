@@ -1,2 +1,2 @@
-service_network_cidr: 10.3.0.0/24
-cluster_network_cidr: 10.2.0.0/16
+openshift_master_config_path: /etc/origin/master
+openshift_master_loglevel: 0

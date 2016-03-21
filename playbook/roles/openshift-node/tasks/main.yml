@@ -3,13 +3,12 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - /var/lib/origin/openshift.local.config/node
-    - /etc/origin/node/
+    - "{{ openshift_node_config_path }}"
 
 - name: install ca root certificate set
   copy:
     src: "roles/openshift-master/files/{{ item.file }}"
-    dest: /var/lib/origin/openshift.local.config/node/{{ item.file }}
+    dest: "{{ openshift_node_config_path }}/{{ item.file }}"
     mode: "{{ item.mode }}"
     force: "{{ item.force | default(true) }}"
   with_items:
@@ -24,28 +23,28 @@
 - name: generate the node client config
   command: >
     {{ openshift_admin_binary }} create-api-client-config
-      --certificate-authority=/var/lib/origin/openshift.local.config/node/ca.crt
-      --client-dir=/var/lib/origin/openshift.local.config/node/
+      --certificate-authority={{ openshift_node_config_path }}/ca.crt
+      --client-dir={{ openshift_node_config_path }}
       --groups=system:nodes
       --master={{ openshift_master_api_url }}
-      --signer-cert=/var/lib/origin/openshift.local.config/node/ca.crt
-      --signer-key=/var/lib/origin/openshift.local.config/node/ca.key
-      --signer-serial=/var/lib/origin/openshift.local.config/node/ca.serial.txt
+      --signer-cert={{ openshift_node_config_path }}/ca.crt
+      --signer-key={{ openshift_node_config_path }}/ca.key
+      --signer-serial={{ openshift_node_config_path }}/ca.serial.txt
       --user=system:node:{{ inventory_hostname }}
   args:
-    creates: /var/lib/origin/openshift.local.config/node/system:node:{{ inventory_hostname }}.crt
+    creates: "{{ openshift_node_config_path }}/system:node:{{ inventory_hostname }}.crt"
 
 - name: generate the node server certificate
   command: >
     {{ openshift_admin_binary }} ca create-server-cert
-      --cert=/var/lib/origin/openshift.local.config/node/server.crt
-      --key=/var/lib/origin/openshift.local.config/node/server.key
+      --cert={{ openshift_node_config_path }}/server.crt
+      --key={{ openshift_node_config_path }}/server.key
       --hostnames="{{ private_ip }},{{ inventory_hostname }}"
-      --signer-cert=/var/lib/origin/openshift.local.config/node/ca.crt
-      --signer-key=/var/lib/origin/openshift.local.config/node/ca.key
-      --signer-serial=/var/lib/origin/openshift.local.config/node/ca.serial.txt
+      --signer-cert={{ openshift_node_config_path }}/ca.crt
+      --signer-key={{ openshift_node_config_path }}/ca.key
+      --signer-serial={{ openshift_node_config_path }}/ca.serial.txt
   args:
-    creates: /var/lib/origin/openshift.local.config/node/server.crt
+    creates: "{{ openshift_node_config_path }}/server.crt"
 
 - name: ensure manifests directory is present
   file:
@@ -61,7 +60,13 @@
 - name: install openshift-node config
   template:
     src: node-config.yaml
-    dest: /etc/origin/node/node-config.yaml
+    dest: "{{ openshift_node_config_path }}/node-config.yaml"
+  notify: restart openshift-node
+
+- name: install openshift-node sysconfig
+  template:
+    src: openshift-node.sysconfig
+    dest: /etc/sysconfig/openshift-node
   notify: restart openshift-node
 
 - name: wait for openshift master

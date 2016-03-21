@@ -1,12 +1,12 @@
 - name: create openshift-master config directory
   file:
-    path: "{{ openshift_master_config_dir }}"
+    path: "{{ openshift_master_config_path }}"
     state: directory
 
 - name: install ca root certificate set
   copy:
     src: "{{ item.file }}"
-    dest: "{{ openshift_master_config_dir }}/{{ item.file }}"
+    dest: "{{ openshift_master_config_path }}/{{ item.file }}"
     mode: "{{ item.mode }}"
     force: "{{ item.force | default(true) }}"
   with_items:
@@ -24,25 +24,33 @@
       --hostnames={{ private_ip }},{{ openshift_kubernetes_service_ip }},openshift-master.skydns.local
       --master=https://{{ private_ip }}:8443
       --public-master=https://{{ private_ip }}:8443
-      --cert-dir={{ openshift_master_config_dir }}
+      --cert-dir={{ openshift_master_config_path }}
   args:
-    creates: "{{ openshift_master_config_dir }}/master.server.crt"
+    creates: "{{ openshift_master_config_path }}/master.server.crt"
 
 - name: create the policy file
-  command: "{{ openshift_admin_binary }} create-bootstrap-policy-file"
+  command: >
+    {{ openshift_admin_binary }} create-bootstrap-policy-file
+      --filename={{ openshift_master_config_path }}/policy.json
   args:
-    creates: "{{ openshift_master_config_dir }}/policy.json"
+    creates: "{{ openshift_master_config_path }}/policy.json"
 
 - name: symlink the admin kubeconfig to /root/.kube/config
   file:
-    src: "{{ openshift_master_config_dir }}/admin.kubeconfig"
+    src: "{{ openshift_master_config_path }}/admin.kubeconfig"
     dest: /root/.kube/config
     state: link
 
 - name: install openshift-master config
   template:
     src: master-config.yaml
-    dest: "{{ openshift_master_config_dir }}/master-config.yaml"
+    dest: "{{ openshift_master_config_path }}/master-config.yaml"
+  notify: restart openshift-master
+
+- name: install openshift-master sysconfig
+  template:
+    src: openshift-master.sysconfig
+    dest: /etc/sysconfig/openshift-master
   notify: restart openshift-master
 
 - name: install openshift-master service

@@ -10,6 +10,7 @@ docker run -it \
   --privileged --net=host --rm \
   --user=${user}:${group} \
   -v /var/lib/origin:/var/lib/origin \
+  -v /etc/origin:/etc/origin \
   -v ~/.kube:/root/.kube \
   -v /tmp:/tmp \
   -e KUBECONFIG=/root/.kube/config \

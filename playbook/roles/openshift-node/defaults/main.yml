@@ -1,0 +1,3 @@
+openshift_node_config_path: /etc/origin/node
+openshift_node_volume_path: /var/lib/origin/volumes
+openshift_node_loglevel: 0
