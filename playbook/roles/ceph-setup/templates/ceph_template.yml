@@ -1,15 +1,11 @@
 apiVersion: v1
 kind: List
-labels:
-  application: ceph-devauto
 metadata: {}
 items:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
     name: ceph-devauto
-  secrets:
-  - name: ceph-devauto-secret
 - apiVersion: v1
   kind: RoleBinding
   metadata:
@@ -26,9 +22,7 @@ items:
 - apiVersion: v1
   kind: Pod
   metadata:
-    name: ceph-devauto
-    labels:
-      deploymentConfig: ceph-devauto
+    name: ceph-bootstrap
   spec:
     serviceAccountName: ceph-devauto
     restartPolicy: Never
@@ -40,9 +34,9 @@ items:
       - name: APPLICATION_NAME
         value: ceph-config
       - name: ETCDCTL_PEERS
-        value: "http://192.168.8.201:2379"
+        value: "http://{{ private_ip }}:2379"
       - name: MON_IP
-        value: 192.168.8.201
+        value: "{{ private_ip }}"
       - name: MON_NAME
         value: mon00
       - name: CLUSTER
