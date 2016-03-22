@@ -53,9 +53,3 @@ elif [[ "$output" = *exists* ]]; then
 else
   fail_module "Failed to create manifest: $output"
 fi
-
-# case "$output" in
-#   *created* ) changed true;;
-#   *exists* ) changed false;;
-#   * ) fail_module "Failed to create manifest: $output";;
-# esac
