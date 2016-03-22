@@ -1,0 +1,8 @@
+- name: setup ceph project
+  oc_create:
+    manifest: "{{ lookup('template', 'ceph_project.yml') }}"
+
+- name: install ceph Template
+  oc_create:
+    manifest: "{{ lookup('template', 'ceph_template.yml') }}"
+    project: ceph

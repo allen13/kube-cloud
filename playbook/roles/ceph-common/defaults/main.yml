@@ -1,0 +1,3 @@
+ceph_project: ceph
+ceph_cluster_name: ceph-devauto
+ceph_data_location: "/var/lib/ceph"
