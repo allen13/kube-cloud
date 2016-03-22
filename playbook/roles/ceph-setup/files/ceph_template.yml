@@ -30,7 +30,7 @@ items:
     labels:
       deploymentConfig: ceph-devauto
   spec:
-    serviceAccountName: ceph-cluster
+    serviceAccountName: ceph-devauto
     restartPolicy: Never
     containers:
     - name: ceph-bootstrap
