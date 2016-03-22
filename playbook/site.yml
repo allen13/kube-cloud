@@ -80,14 +80,14 @@
   tags:
     - openshift-router
 
-- name: setup ceph
+- name: ceph bootstrap
   hosts: ceph-mons[0]
   gather_facts: false
   become: true
   roles:
-    - ceph-setup
+    - ceph-bootstrap
   tags:
-    - ceph-setup
+    - ceph-bootstrap
     - ceph
 
 - name: ceph monitor daemon

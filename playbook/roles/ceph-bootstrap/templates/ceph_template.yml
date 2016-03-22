@@ -1,49 +1,41 @@
 apiVersion: v1
 kind: List
-labels:
-  application: ceph-devauto
 metadata: {}
 items:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: ceph-devauto
-  secrets:
-  - name: ceph-devauto-secret
+    name: "{{ ceph_cluster_name }}"
 - apiVersion: v1
   kind: RoleBinding
   metadata:
     name: edit
-    namespace: ceph
+    namespace: "{{ ceph_project }}"
   roleRef:
     name: edit
   subjects:
   - kind: ServiceAccount
-    name: ceph-devauto
-    namespace: ceph
+    name: "{{ ceph_cluster_name }}"
+    namespace: "{{ ceph_project }}"
   userNames:
-  - "system:serviceaccount:default:ceph-devauto"
+  - "system:serviceaccount:default:{{ ceph_cluster_name }}"
 - apiVersion: v1
   kind: Pod
   metadata:
-    name: ceph-devauto
-    labels:
-      deploymentConfig: ceph-devauto
+    name: ceph-bootstrap
   spec:
-    serviceAccountName: ceph-cluster
+    serviceAccountName: "{{ ceph_cluster_name }}"
     restartPolicy: Never
     containers:
     - name: ceph-bootstrap
       image: ceph/config
       imagePullPolicy: Always
       env:
-      - name: APPLICATION_NAME
-        value: ceph-config
       - name: ETCDCTL_PEERS
-        value: "http://192.168.8.201:2379"
+        value: "http://{{ private_ip }}:2379"
       - name: MON_IP
-        value: 192.168.8.201
+        value: "{{ private_ip }}"
       - name: MON_NAME
         value: mon00
       - name: CLUSTER
-        value: ceph-devauto
+        value: "{{ ceph_cluster_name }}"

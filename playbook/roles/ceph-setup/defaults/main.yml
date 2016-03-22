@@ -1,9 +1,0 @@
-ceph_folders:
-  - "/etc/ceph"
-  - "/var/lib/ceph"
-
-ceph_project:
-  apiVersion: v1
-  kind: Project
-  metadata:
-    name: "ceph"
