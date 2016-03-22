@@ -44,9 +44,11 @@ if [[ "$manifest" = \'* ]]; then
 fi
 echo "$manifest" > "$openshift_tmp_manifest_path"
 
-output=$("$openshift_client_binary" create -f "$openshift_tmp_manifest_path" -n "$project" 2>&1)
+output=$("$openshift_client_binary" -n "$project" create -f "$openshift_tmp_manifest_path" 2>&1)
 
-if [[ "$output" = *created* ]]; then
+if [[ "$output" = *error* ]]; then
+  fail_module "Failed to create manifest: $output"
+elif [[ "$output" = *created* ]]; then
   changed true
 elif [[ "$output" = *exists* ]]; then
   changed false
