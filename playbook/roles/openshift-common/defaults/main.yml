@@ -17,3 +17,6 @@ openshift_kubernetes_service_ip: 10.3.0.1
 
 openshift_dns_domain: cluster.local
 openshift_external_dns_domain: "{{ hostvars[groups['openshift-master'][0]]['private_ip'] }}.xip.io"
+
+openshift_metrics_hostname: hawkular-metrics.{{ openshift_external_dns_domain }}
+openshift_metrics_public_url: https://{{ openshift_metrics_hostname }}/hawkular/metrics

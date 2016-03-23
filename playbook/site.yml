@@ -136,3 +136,12 @@
 #   tags:
 #     - ceph-restapi
 #     - ceph
+
+- name: openshift metrics
+  hosts: openshift-master[0]
+  gather_facts: false
+  become: true
+  roles:
+    - openshift-metrics
+  tags:
+    - openshift-metrics

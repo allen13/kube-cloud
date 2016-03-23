@@ -11,7 +11,7 @@ assetConfig:
   loggingPublicURL: ""
   logoutURL: ""
   masterPublicURL: https://{{ private_ip }}:8443
-  metricsPublicURL: ""
+  metricsPublicURL: {{ openshift_metrics_public_url }}
   publicURL: https://{{ private_ip }}:8443/console/
   servingInfo:
     bindAddress: 0.0.0.0:8443
