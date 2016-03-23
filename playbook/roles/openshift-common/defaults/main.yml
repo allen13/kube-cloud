@@ -7,6 +7,7 @@ openshift_admin_binary: "{{ openshift_binary_path }}/oadm"
 openshift_client_binary: "{{ openshift_binary_path }}/oc"
 openshift_kubectl_binary: "{{ openshift_binary_path }}/kubectl"
 
+openshift_master_config_path: /etc/origin/master
 openshift_pod_manifest_path: /etc/origin/node/manifests
 
 openshift_cluster_subnet: 10.2.0.0/16
@@ -14,4 +15,5 @@ openshift_cluster_subnet_first_two_octets: '10.2'
 openshift_service_subnet: 10.3.0.0/24
 openshift_kubernetes_service_ip: 10.3.0.1
 
-openshift_dns_domain: "{{ hostvars[groups['openshift-master'][0]]['private_ip'] }}.xip.io"
+openshift_dns_domain: cluster.local
+openshift_external_dns_domain: "{{ hostvars[groups['openshift-master'][0]]['private_ip'] }}.xip.io"

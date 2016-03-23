@@ -1,2 +1,9 @@
-openshift_master_config_path: /etc/origin/master
 openshift_master_loglevel: 0
+
+openshift_master_certificate_hostnames:
+  - "{{ private_ip }}"
+  - "{{ openshift_kubernetes_service_ip }}"
+  - kubernetes.default.svc.{{ openshift_dns_domain }}
+  - openshift-master.skydns.local
+  - 127.0.0.1
+  - localhost

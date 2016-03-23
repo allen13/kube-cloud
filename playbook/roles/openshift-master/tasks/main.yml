@@ -21,7 +21,7 @@
 - name: create the master certificates
   command: >
     {{ openshift_admin_binary }} ca create-master-certs
-      --hostnames={{ private_ip }},{{ openshift_kubernetes_service_ip }},openshift-master.skydns.local
+      --hostnames={{ openshift_master_certificate_hostnames | join(',') }}
       --master=https://{{ private_ip }}:8443
       --public-master=https://{{ private_ip }}:8443
       --cert-dir={{ openshift_master_config_path }}
