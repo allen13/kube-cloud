@@ -20,3 +20,5 @@ openshift_external_dns_domain: "{{ hostvars[groups['openshift-master'][0]]['priv
 
 openshift_metrics_hostname: hawkular-metrics.{{ openshift_external_dns_domain }}
 openshift_metrics_public_url: https://{{ openshift_metrics_hostname }}/hawkular/metrics
+
+openshift_kibana_hostname: kibana.{{ openshift_external_dns_domain }}

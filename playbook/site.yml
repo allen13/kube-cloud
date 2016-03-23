@@ -145,3 +145,12 @@
     - openshift-metrics
   tags:
     - openshift-metrics
+
+# - name: openshift logging
+#   hosts: openshift-master[0]
+#   gather_facts: false
+#   become: true
+#   roles:
+#     - openshift-logging
+#   tags:
+#     - openshift-logging

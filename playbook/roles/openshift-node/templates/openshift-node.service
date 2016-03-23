@@ -14,7 +14,9 @@ ExecStart=/usr/bin/docker run \
   -v /etc/localtime:/etc/localtime:ro \
   -v /etc/machine-id:/etc/machine-id:ro \
   -v /lib/modules:/lib/modules \
-  -v /run:/run -v /sys:/sys:ro \
+  -v /run:/run \
+  -v /sys:/sys:ro \
+  -v /var/log:/var/log \
   -v /usr/bin/docker:/usr/bin/docker:ro \
   -v /var/lib/docker:/var/lib/docker \
   -v /etc/origin/node:/etc/origin/node \
